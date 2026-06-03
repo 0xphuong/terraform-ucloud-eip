@@ -53,4 +53,8 @@ variable "eips" {
     ])
     error_message = "Per-group charge_mode must be 'traffic', 'bandwidth', or 'share_bandwidth'."
   }
+  validation {
+    condition     = var.eips.charge_type == "dynamic" ? true : var.eips.duration >= 1
+    error_message = "duration must be >= 1 when charge_type is 'month' or 'year'."
+  }
 }
