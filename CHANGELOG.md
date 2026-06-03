@@ -7,6 +7,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-04-29
+
+### Added
+- Validation: `share_bandwidth_package_id` is required when `charge_mode = "share_bandwidth"`
+- Validation: per-group `charge_mode` override must be a valid enum value
+
 ## [1.0.0] - 2026-04-29
 
 ### Added

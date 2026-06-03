@@ -42,4 +42,15 @@ variable "eips" {
     condition     = contains(["month", "year", "dynamic"], var.eips.charge_type)
     error_message = "charge_type must be 'month', 'year', or 'dynamic'."
   }
+  validation {
+    condition     = var.eips.charge_mode == "share_bandwidth" ? var.eips.share_bandwidth_package_id != null : true
+    error_message = "share_bandwidth_package_id is required when charge_mode is 'share_bandwidth'."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.eips.eip_configs :
+      v.charge_mode == null ? true : contains(["traffic", "bandwidth", "share_bandwidth"], v.charge_mode)
+    ])
+    error_message = "Per-group charge_mode must be 'traffic', 'bandwidth', or 'share_bandwidth'."
+  }
 }
