@@ -7,6 +7,23 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-08-20
+
+### Added
+- `associate` flag on `eip_configs` and on `overrides`, deciding whether an EIP is bound.
+
+### Fixed
+- An EIP could not be created and bound in the same apply as the instance it attaches to. The
+  association's `for_each` was filtered on `resource_id != null`, and that id is unknown at plan time
+  while the instance is still being created, so Terraform refused the plan with "Invalid for_each
+  argument: local.associable_eips will be known only after apply". `for_each` keys have to be
+  resolvable at plan time, values do not — the new `associate` flag keeps the key set static and
+  leaves the unknown id in the value.
+
+  Existing configurations are unaffected: with `associate` unset the old inference from `resource_id`
+  still applies, which works whenever that id is a literal or a value from a prior apply. Set
+  `associate = true` when the id comes from a resource created in the same run.
+
 ## [1.2.0] - 2026-04-29
 
 ### Added

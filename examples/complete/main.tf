@@ -38,9 +38,9 @@ module "eip" {
       # ── Use case 4: Higher bandwidth for specific EIP ──────────────
       lb = {
         count     = 2
-        bandwidth = 50   # default bandwidth
+        bandwidth = 50 # default bandwidth
         overrides = {
-          "0" = { bandwidth = 200 }  # lb-0 gets higher bandwidth
+          "0" = { bandwidth = 200 } # lb-0 gets higher bandwidth
         }
         resource_id   = var.lb_id
         resource_type = "lb"
@@ -49,7 +49,7 @@ module "eip" {
   }
 }
 
-output "eip_ids"         { value = module.eip.eip_ids }
-output "eip_public_ips"  { value = module.eip.eip_public_ips }
-output "eip_statuses"    { value = module.eip.eip_statuses }
+output "eip_ids" { value = module.eip.eip_ids }
+output "eip_public_ips" { value = module.eip.eip_public_ips }
+output "eip_statuses" { value = module.eip.eip_statuses }
 output "association_ids" { value = module.eip.association_ids }

@@ -7,6 +7,7 @@ Terraform module to create **Elastic IPs** and optional **EIP Associations** on 
 - Creates multiple EIPs via a map-based config
 - Optional association to instances, load balancers, NAT gateways, etc.
 - `overrides` for per-EIP config (bandwidth, resource_id, resource_type)
+- Binds an EIP to an instance created in the same apply, via an explicit `associate` flag
 - Supports shared bandwidth mode (`share_bandwidth`)
 - Structured outputs: EIP IDs, public IPs, statuses, association IDs
 
@@ -96,6 +97,25 @@ eips = {
 | ucloud_eip.this | resource |
 | ucloud_eip_association.this | resource |
 
+## Binding to a resource created in the same apply
+
+`for_each` keys must be resolvable at plan time. Leaving `associate` unset makes the module infer the
+binding from `resource_id`, which is fine for a literal id or one from a previous apply — but not for an
+instance being created in the same run, where the id is still unknown and Terraform refuses the plan with
+`Invalid for_each argument`.
+
+Set the flag explicitly in that case:
+
+```hcl
+eip_configs = {
+  web = {
+    count       = 1
+    associate   = true
+    resource_id = module.host.instance_ids["web-0"]
+  }
+}
+```
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -123,6 +143,7 @@ eips = {
 | `bandwidth` | `number` | `null` | no | Override bandwidth for this group |
 | `charge_mode` | `string` | `null` | no | Override charge mode for this group |
 | `remark` | `string` | `null` | no | EIP remark |
+| `associate` | `bool` | `null` | no | Whether to bind the EIP. Unset infers it from `resource_id` |
 | `resource_id` | `string` | `null` | no | Resource ID to associate. Omit to create unattached EIP |
 | `resource_type` | `string` | `"instance"` | no | `instance` \| `lb` \| `natgw` \| `udb` \| `vpngw` \| `baremetal` |
 | `overrides` | `map(object)` | `{}` | no | Per-EIP overrides, key = EIP index string |
@@ -132,6 +153,7 @@ eips = {
 | Field | Description |
 |-------|-------------|
 | `bandwidth` | Override bandwidth for this EIP |
+| `associate` | Override whether this EIP is bound |
 | `resource_id` | Override resource to associate for this EIP |
 | `resource_type` | Override resource type for this EIP |
 | `remark` | Override remark for this EIP |

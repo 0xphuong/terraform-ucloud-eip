@@ -10,15 +10,23 @@ variable "eips" {
     share_bandwidth_package_id = optional(string)
 
     eip_configs = map(object({
-      count         = number
-      bandwidth     = optional(number)
-      charge_mode   = optional(string)
-      remark        = optional(string)
+      count       = number
+      bandwidth   = optional(number)
+      charge_mode = optional(string)
+      remark      = optional(string)
+
+      # Whether to bind the EIP. Leave unset and it is inferred from
+      # resource_id, which only works when that id is known at plan time. When
+      # resource_id comes from a resource being created in the same apply the
+      # inference cannot be evaluated, and Terraform fails with "Invalid
+      # for_each argument" — set associate = true explicitly in that case.
+      associate     = optional(bool)
       resource_id   = optional(string)
       resource_type = optional(string, "instance")
 
       overrides = optional(map(object({
         bandwidth     = optional(number)
+        associate     = optional(bool)
         resource_id   = optional(string)
         resource_type = optional(string)
         remark        = optional(string)

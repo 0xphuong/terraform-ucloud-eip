@@ -25,15 +25,24 @@ locals {
           config.overrides[tostring(i)].resource_type != null ? config.overrides[tostring(i)].resource_type : config.resource_type,
           config.resource_type
         )
+        associate = try(
+          config.overrides[tostring(i)].associate != null ? config.overrides[tostring(i)].associate : config.associate,
+          config.associate
+        )
       }
     ]
   ])
 
   eip_map = { for e in local.expanded_eips : e.key => e }
 
+  # for_each keys must be resolvable at plan time. Filtering on resource_id
+  # breaks the moment that id belongs to a resource created in the same apply —
+  # Terraform then reports "Invalid for_each argument". The explicit `associate`
+  # flag keeps the key set static and leaves the unknown id in the value, which
+  # is the arrangement Terraform asks for.
   associable_eips = {
     for k, e in local.eip_map : k => e
-    if e.resource_id != null
+    if e.associate != null ? e.associate : e.resource_id != null
   }
 }
 

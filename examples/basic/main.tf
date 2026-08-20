@@ -16,5 +16,5 @@ module "eip" {
   }
 }
 
-output "eip_ids"        { value = module.eip.eip_ids }
+output "eip_ids" { value = module.eip.eip_ids }
 output "eip_public_ips" { value = module.eip.eip_public_ips }
