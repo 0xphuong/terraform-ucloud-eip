@@ -116,6 +116,21 @@ eip_configs = {
 }
 ```
 
+## Cost guard
+
+`max_bandwidth` caps every `bandwidth` in the module call and fails the plan when one exceeds it:
+
+```hcl
+module "eip" {
+  source        = "github.com/0xphuong/terraform-ucloud-eip?ref=v1.4.0"
+  max_bandwidth = 300
+  ...
+}
+```
+
+This is a billing ceiling, not a platform one — UCloud accepted 300 Mbps on `charge_mode = "traffic"`,
+above the 200 its docs claim, and takes more. Default is `800`.
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -126,6 +141,7 @@ eip_configs = {
 
 | Field | Type | Default | Required | Description |
 |-------|------|---------|----------|-------------|
+| `max_bandwidth` | `number` | `800` | no | Upper bound enforced on every EIP bandwidth |
 | `internet_type` | `string` | — | **yes** | `bgp` \| `international` |
 | `charge_mode` | `string` | `"bandwidth"` | no | `traffic` \| `bandwidth` \| `share_bandwidth` |
 | `charge_type` | `string` | `"month"` | no | `month` \| `year` \| `dynamic` |

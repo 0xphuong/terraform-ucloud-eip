@@ -1,3 +1,22 @@
+# Cost guard, not a platform limit: UCloud accepts more than this (a standalone
+# EIP was created at 300 Mbps with charge_mode = "traffic", above the 200 the
+# docs claim). Raise it deliberately — bandwidth above the agreed ceiling is
+# billed at a higher rate.
+#
+# Enforced by a precondition on ucloud_eip in main.tf rather than a validation
+# block here: a variable validation may only reference its own variable before
+# Terraform 1.9, and this module supports >= 1.3.0.
+variable "max_bandwidth" {
+  description = "Upper bound enforced on every EIP bandwidth in this module call"
+  type        = number
+  default     = 800
+
+  validation {
+    condition     = var.max_bandwidth >= 1
+    error_message = "max_bandwidth must be at least 1."
+  }
+}
+
 variable "eips" {
   description = "Shared EIP parameters and per-group configurations"
   type = object({

@@ -7,6 +7,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-08-20
+
+### Added
+- `max_bandwidth` (default `800`), an upper bound applied to every EIP in the module call and enforced by
+  a precondition on `ucloud_eip`. It is a cost guard, not a platform limit: UCloud accepted 300 Mbps with
+  `charge_mode = "traffic"`, above the 200 its documentation claims, and takes more than that. Set it to
+  the ceiling agreed for the environment so a larger `bandwidth` fails at plan time instead of appearing
+  on an invoice.
+
+  It lives in a precondition rather than a `validation` block because it compares two different
+  variables, which variable validation cannot do before Terraform 1.9 — and this module supports 1.3.0.
+
 ## [1.3.0] - 2026-08-20
 
 ### Added

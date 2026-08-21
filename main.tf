@@ -62,6 +62,16 @@ resource "ucloud_eip" "this" {
   # Optional
   remark                     = each.value.remark != null ? each.value.remark : null
   share_bandwidth_package_id = var.eips.share_bandwidth_package_id != null ? var.eips.share_bandwidth_package_id : null
+
+  lifecycle {
+    # Cost guard. Lives here and not in a validation block because it compares
+    # two different variables, which variable validation cannot do before
+    # Terraform 1.9.
+    precondition {
+      condition     = (each.value.bandwidth != null ? each.value.bandwidth : var.eips.bandwidth) <= var.max_bandwidth
+      error_message = "EIP '${each.key}' asks for ${each.value.bandwidth != null ? each.value.bandwidth : var.eips.bandwidth} Mbps, above max_bandwidth (${var.max_bandwidth}). Bandwidth beyond the agreed ceiling is billed at a higher rate — raise max_bandwidth only on purpose."
+    }
+  }
 }
 
 resource "ucloud_eip_association" "this" {
